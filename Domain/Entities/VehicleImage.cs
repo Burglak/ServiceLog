@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLog.Domain.Entities
 {
-    public class VehicleUser
+    public class VehicleImage
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int UserId { get; set; }
         public Guid VehicleId { get; set; }
+        [Required]
+        public required string ImagePath {  get; set; }
 
-        [ForeignKey("UserId")]
-        public User User { get; set; } = null!;
         [ForeignKey("VehicleId")]
         public Vehicle Vehicle { get; set; } = null!;
     }
