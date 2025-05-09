@@ -13,6 +13,7 @@ namespace ServiceLog.Domain.Entities
         public UserRole Role { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
+        public ICollection<VehicleUser> VehicleUsers { get; set; } = [];
 
         public User()
         { 

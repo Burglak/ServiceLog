@@ -29,6 +29,7 @@ namespace ServiceLog.Domain.Entities
         public VehicleColor Color { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
+        public ICollection<VehicleUser> VehicleUsers { get; set; } = [];
 
         public Vehicle()
         {
