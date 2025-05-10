@@ -5,8 +5,6 @@ namespace ServiceLog.Domain.Entities
 {
     public class VehicleUser : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }
         [ForeignKey(nameof(Vehicle))]
