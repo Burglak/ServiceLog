@@ -3,15 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLog.Domain.Entities
 {
-    public class VehicleUser
+    public class Notification
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey(nameof(User))]
-        public int UserId { get; set; }
         [ForeignKey(nameof(Vehicle))]
         public Guid VehicleId { get; set; }
-        public User User { get; set; } = null!;
+        [Required]
+        public required string Title { get; set; }
+        public string? Description { get; set; }
+        public DateTime NotifyAt { get; set; }
         public Vehicle Vehicle { get; set; } = null!;
     }
 }

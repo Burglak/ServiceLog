@@ -7,6 +7,7 @@ namespace ServiceLog.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+        [ForeignKey(nameof(Vehicle))]
         public Guid VehicleId { get; set; }
         public DateTime ServiceDate { get; set; }
         [Required]
@@ -19,9 +20,8 @@ namespace ServiceLog.Domain.Entities
         public string? WorkshopName { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
-
-        [ForeignKey("VehicleId")]
         public Vehicle Vehicle { get; set; } = null!;
+        public ICollection<ServiceRecordImage> serviceRecordImages { get; set; } = [];
 
         public ServiceRecord()
         {

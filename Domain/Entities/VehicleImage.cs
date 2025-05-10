@@ -8,11 +8,10 @@ namespace ServiceLog.Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        [ForeignKey(nameof(Vehicle))]
         public Guid VehicleId { get; set; }
         [Required]
         public required string ImagePath {  get; set; }
-
-        [ForeignKey("VehicleId")]
         public Vehicle Vehicle { get; set; } = null!;
     }
 }
