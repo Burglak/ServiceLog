@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLog.Domain.Entities
 {
-    public class ServiceRecord
+    public class ServiceRecord : BaseEntity
     {
         [Key]
         public int Id { get; set; }
@@ -18,15 +18,7 @@ namespace ServiceLog.Domain.Entities
         [Range(0, double.MaxValue)]
         public decimal Cost { get; set; }
         public string? WorkshopName { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public DateTime CreatedAt { get; set; }
         public Vehicle Vehicle { get; set; } = null!;
         public ICollection<ServiceRecordImage> serviceRecordImages { get; set; } = [];
-
-        public ServiceRecord()
-        {
-            this.CreatedAt = DateTime.UtcNow;
-            this.UpdatedAt = DateTime.UtcNow;
-        }
     }
 }

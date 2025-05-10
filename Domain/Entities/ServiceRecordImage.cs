@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLog.Domain.Entities
 {
-    public class ServiceRecordImage
+    public class ServiceRecordImage : BaseEntity
     {
         [Key]
         public int Id { get; set; }

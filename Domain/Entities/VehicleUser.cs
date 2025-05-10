@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLog.Domain.Entities
 {
-    public class VehicleUser
+    public class VehicleUser : BaseEntity
     {
         [Key]
         public int Id { get; set; }
