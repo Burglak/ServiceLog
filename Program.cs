@@ -1,11 +1,16 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using ServiceLog.Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
+using ServiceLog.Application.Interfaces;
 using ServiceLog.Infrastructure.Data;
 using ServiceLog.Infrastructure.Repositories;
+using ServiceLog.Infrastructure.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,6 +28,28 @@ builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<VehicleImageRepository>();
 builder.Services.AddScoped<VehicleUserRepository>();
 
+// Configure JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"])),
+            ClockSkew = TimeSpan.Zero // Optional: adjust if you want a small window for token expiry
+        };
+    });
+
+// Add authorization to support role-based access control
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,6 +60,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable authentication
+app.UseAuthentication(); // Add authentication middleware
+app.UseAuthorization();
 
 app.UseAuthorization();
 
