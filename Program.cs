@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ServiceLog.Application.Interfaces;
 using ServiceLog.Application.Interfaces.Services;
+using ServiceLog.Application.Services;
 using ServiceLog.Domain.Entities;
 using ServiceLog.Infrastructure.Data;
 using ServiceLog.Infrastructure.Repositories;

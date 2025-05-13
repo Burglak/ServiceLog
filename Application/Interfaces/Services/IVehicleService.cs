@@ -6,5 +6,10 @@ namespace ServiceLog.Application.Interfaces.Services
     public interface IVehicleService
     {
         Task<Vehicle> CreateVehicleAsync(CreateVehicleRequest request);
+        Task<Vehicle?> GetVehicleByIdAsync(Guid id);
+        Task<IEnumerable<Vehicle>> GetUserVehiclesAsync();
+
+        Task<Vehicle> UpdateVehicleAsync(Guid id, UpdateVehicleRequest request);
+        Task DeleteVehicleAsync(Guid id);
     }
 }

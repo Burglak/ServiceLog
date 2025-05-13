@@ -1,31 +1,88 @@
-﻿namespace ServiceLog.API.Controllers
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ServiceLog.Application.DTOs.Vehicle;
+using ServiceLog.Application.Interfaces.Services;
+
+namespace ServiceLog.API.Controllers
 {
-    using global::ServiceLog.Application.DTOs.Vehicle;
-    using global::ServiceLog.Application.Interfaces.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-
-    namespace ServiceLog.API.Controllers
+    [ApiController]
+    [Route("api/vehicles")]
+    [Authorize(Roles = "User")]
+    public class VehicleController : ControllerBase
     {
-        [ApiController]
-        [Route("api/[controller]")]
-        public class VehicleController : ControllerBase
+        private readonly IVehicleService _vehicleService;
+
+        public VehicleController(IVehicleService vehicleService)
         {
-            private readonly IVehicleService _vehicleService;
+            _vehicleService = vehicleService;
+        }
 
-            public VehicleController(IVehicleService vehicleService)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateVehicleRequest request)
+        {
+            var result = await _vehicleService.CreateVehicleAsync(request);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
+            if (vehicle == null)
+                return NotFound("Vehicle not found or does not belong to the user");
+
+            return Ok(vehicle);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllForUser()
+        {
+            try
             {
-                _vehicleService = vehicleService;
+                var vehicles = await _vehicleService.GetUserVehiclesAsync();
+                return Ok(vehicles);
             }
-
-            [HttpPost]
-            [Authorize(Roles = "User")]
-            public async Task<IActionResult> Create([FromBody] CreateVehicleRequest request)
+            catch (UnauthorizedAccessException)
             {
-                var result = await _vehicleService.CreateVehicleAsync(request);
-                return Ok(result);
+                return Unauthorized("User not logged in");
+            }
+        }
+
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleRequest request)
+        {
+            try
+            {
+                var updatedVehicle = await _vehicleService.UpdateVehicleAsync(id, request);
+                return Ok(updatedVehicle);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("User not logged in");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _vehicleService.DeleteVehicleAsync(id);
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("User not logged in");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
             }
         }
     }
-
 }
