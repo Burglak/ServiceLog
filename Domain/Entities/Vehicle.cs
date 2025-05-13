@@ -27,9 +27,5 @@ namespace ServiceLog.Domain.Entities
         public int Mileage { get; set; }
         public DateTime FirstRegistration { get; set; }
         public VehicleColor Color { get; set; }
-        public ICollection<VehicleUser> VehicleUsers { get; set; } = [];
-        public ICollection<VehicleImage> VehicleImages { get; set; } = [];
-        public ICollection<Notification> Notifications { get; set; } = [];
-        public ICollection<ServiceRecord> ServiceRecords { get; set; } = [];
     }
 }

@@ -19,6 +19,5 @@ namespace ServiceLog.Domain.Entities
         public decimal Cost { get; set; }
         public string? WorkshopName { get; set; }
         public Vehicle Vehicle { get; set; } = null!;
-        public ICollection<ServiceRecordImage> serviceRecordImages { get; set; } = [];
     }
 }

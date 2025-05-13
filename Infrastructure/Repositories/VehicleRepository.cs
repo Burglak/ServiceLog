@@ -45,10 +45,6 @@ namespace ServiceLog.Infrastructure.Repositories
         public async Task<Vehicle?> GetWithDetailsAsync(Guid id)
         {
             return await _context.Vehicles
-                .Include(v => v.VehicleUsers).ThenInclude(vu => vu.User)
-                .Include(v => v.VehicleImages)
-                .Include(v => v.Notifications)
-                .Include(v => v.ServiceRecords).ThenInclude(sr => sr.serviceRecordImages)
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
     }

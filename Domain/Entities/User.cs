@@ -11,8 +11,6 @@ namespace ServiceLog.Domain.Entities
         public required string Email { get; set; }
         public string? Password { get; set; }
         public UserRole Role { get; set; }
-        public ICollection<VehicleUser> VehicleUsers { get; set; } = [];
-
         public User()
         {
             

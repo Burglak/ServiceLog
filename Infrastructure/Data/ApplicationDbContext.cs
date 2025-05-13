@@ -7,7 +7,6 @@ namespace ServiceLog.Infrastructure.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
         }
 
         public DbSet<Notification> Notifications { get; set; }
@@ -18,7 +17,6 @@ namespace ServiceLog.Infrastructure.Data
         public DbSet<VehicleImage> VehicleImages { get; set; }
         public DbSet<VehicleUser> VehicleUsers { get; set; }
 
-        // automatically sets createdAt for newly added entities and updatedAt for modified entities
         public override int SaveChanges()
         {
             var entries = ChangeTracker.Entries()
@@ -40,45 +38,40 @@ namespace ServiceLog.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // configuration for Vehicle and VehicleImage (One-to-Many)
             modelBuilder.Entity<VehicleImage>()
                 .HasOne(vi => vi.Vehicle)
-                .WithMany(v => v.VehicleImages)
+                .WithMany()
                 .HasForeignKey(vi => vi.VehicleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // configuration for Vehicle and VehicleUser (Many-to-Many)
             modelBuilder.Entity<VehicleUser>()
                 .HasKey(vu => new { vu.VehicleId, vu.UserId });
 
             modelBuilder.Entity<VehicleUser>()
                 .HasOne(vu => vu.Vehicle)
-                .WithMany(v => v.VehicleUsers)
+                .WithMany()
                 .HasForeignKey(vu => vu.VehicleId);
 
             modelBuilder.Entity<VehicleUser>()
                 .HasOne(vu => vu.User)
-                .WithMany(u => u.VehicleUsers)
+                .WithMany()
                 .HasForeignKey(vu => vu.UserId);
 
-            // configuration for Vehicle and Notification (One-to-Many)
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Vehicle)
-                .WithMany(v => v.Notifications)
+                .WithMany()
                 .HasForeignKey(n => n.VehicleId)
-                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete if Vehicle is deleted
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // configuration for Vehicle and ServiceRecord (One-to-Many)
             modelBuilder.Entity<ServiceRecord>()
                 .HasOne(sr => sr.Vehicle)
-                .WithMany(v => v.ServiceRecords)
+                .WithMany()
                 .HasForeignKey(sr => sr.VehicleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // configuration for ServiceRecord and ServiceRecordImage (One-to-Many)
             modelBuilder.Entity<ServiceRecordImage>()
                 .HasOne(sri => sri.ServiceRecord)
-                .WithMany(sr => sr.serviceRecordImages)
+                .WithMany()
                 .HasForeignKey(sri => sri.ServiceRecordId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

@@ -12,7 +12,7 @@ using ServiceLog.Infrastructure.Data;
 namespace ServiceLog.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250512170411_initialmigration")]
+    [Migration("20250513155153_initialmigration")]
     partial class initialmigration
     {
         /// <inheritdoc />
@@ -278,7 +278,7 @@ namespace ServiceLog.Migrations
             modelBuilder.Entity("ServiceLog.Domain.Entities.Notification", b =>
                 {
                     b.HasOne("ServiceLog.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("Notifications")
+                        .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -289,7 +289,7 @@ namespace ServiceLog.Migrations
             modelBuilder.Entity("ServiceLog.Domain.Entities.ServiceRecord", b =>
                 {
                     b.HasOne("ServiceLog.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("ServiceRecords")
+                        .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -300,7 +300,7 @@ namespace ServiceLog.Migrations
             modelBuilder.Entity("ServiceLog.Domain.Entities.ServiceRecordImage", b =>
                 {
                     b.HasOne("ServiceLog.Domain.Entities.ServiceRecord", "ServiceRecord")
-                        .WithMany("serviceRecordImages")
+                        .WithMany()
                         .HasForeignKey("ServiceRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -311,7 +311,7 @@ namespace ServiceLog.Migrations
             modelBuilder.Entity("ServiceLog.Domain.Entities.VehicleImage", b =>
                 {
                     b.HasOne("ServiceLog.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("VehicleImages")
+                        .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -322,13 +322,13 @@ namespace ServiceLog.Migrations
             modelBuilder.Entity("ServiceLog.Domain.Entities.VehicleUser", b =>
                 {
                     b.HasOne("ServiceLog.Domain.Entities.User", "User")
-                        .WithMany("VehicleUsers")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ServiceLog.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("VehicleUsers")
+                        .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -336,27 +336,6 @@ namespace ServiceLog.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("ServiceLog.Domain.Entities.ServiceRecord", b =>
-                {
-                    b.Navigation("serviceRecordImages");
-                });
-
-            modelBuilder.Entity("ServiceLog.Domain.Entities.User", b =>
-                {
-                    b.Navigation("VehicleUsers");
-                });
-
-            modelBuilder.Entity("ServiceLog.Domain.Entities.Vehicle", b =>
-                {
-                    b.Navigation("Notifications");
-
-                    b.Navigation("ServiceRecords");
-
-                    b.Navigation("VehicleImages");
-
-                    b.Navigation("VehicleUsers");
                 });
 #pragma warning restore 612, 618
         }

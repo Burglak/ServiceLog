@@ -32,10 +32,10 @@ namespace ServiceLog.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<ServiceRecord>> GetAllAsync() =>
-            await _context.ServiceRecords.Include(r => r.serviceRecordImages).ToListAsync();
+            await _context.ServiceRecords.ToListAsync();
 
         public async Task<ServiceRecord?> GetByIdAsync(int id) =>
-            await _context.ServiceRecords.Include(r => r.serviceRecordImages).FirstOrDefaultAsync(r => r.Id == id);
+            await _context.ServiceRecords.FirstOrDefaultAsync(r => r.Id == id);
 
         public async Task<ServiceRecord> UpdateAsync(ServiceRecord record)
         {
