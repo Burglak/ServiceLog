@@ -1,17 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ServiceLog.Application.Interfaces.Repositories;
 using ServiceLog.Domain.Entities;
+using ServiceLog.Infrastructure.Data;
 
 namespace ServiceLog.Infrastructure.Repositories
 {
-    public class ServiceRecordRepository : Repository<ServiceRecord>
+    public class ServiceRecordRepository : IServiceRecordRepository
     {
-        public ServiceRecordRepository(DbContext context) : base(context) { }
+        private readonly ApplicationDbContext _context;
 
-        public async Task<ServiceRecord?> GetWithDetailsAsync(int id)
+        public ServiceRecordRepository(ApplicationDbContext context)
         {
-            return await _dbSet
-                .Include(sr => sr.serviceRecordImages)
-                .FirstOrDefaultAsync(sr => sr.Id == id);
+            _context = context;
+        }
+
+        public async Task<ServiceRecord> AddAsync(ServiceRecord record)
+        {
+            _context.ServiceRecords.Add(record);
+            await _context.SaveChangesAsync();
+            return record;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var record = await _context.ServiceRecords.FindAsync(id);
+            if (record != null)
+            {
+                _context.ServiceRecords.Remove(record);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ServiceRecord>> GetAllAsync() =>
+            await _context.ServiceRecords.Include(r => r.serviceRecordImages).ToListAsync();
+
+        public async Task<ServiceRecord?> GetByIdAsync(int id) =>
+            await _context.ServiceRecords.Include(r => r.serviceRecordImages).FirstOrDefaultAsync(r => r.Id == id);
+
+        public async Task<ServiceRecord> UpdateAsync(ServiceRecord record)
+        {
+            _context.ServiceRecords.Update(record);
+            await _context.SaveChangesAsync();
+            return record;
         }
     }
 }
