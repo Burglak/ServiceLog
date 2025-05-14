@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServiceLog.Application.DTOs.Vehicle;
-using ServiceLog.Application.Interfaces;
+using ServiceLog.Application.Interfaces.Repositories;
 using ServiceLog.Application.Interfaces.Services;
 using ServiceLog.Domain.Entities;
 using ServiceLog.Infrastructure.Data;
@@ -12,11 +12,13 @@ namespace ServiceLog.Application.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IVehicleRepository _vehicleRepository;
 
-        public VehicleService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public VehicleService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IVehicleRepository vehicleRepository)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _vehicleRepository = vehicleRepository;
         }
         private int? GetUserId()
         {
@@ -66,23 +68,6 @@ namespace ServiceLog.Application.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Vehicle>> GetUserVehiclesAsync()
-        {
-            var userId = GetUserId();
-            if (userId == null)
-                throw new UnauthorizedAccessException("User not logged in");
-
-            var vehicleIds = await _context.VehicleUsers
-                .Where(vu => vu.UserId == userId)
-                .Select(vu => vu.VehicleId)
-                .ToListAsync();
-
-            var vehicles = await _context.Vehicles
-                .Where(v => vehicleIds.Contains(v.Id))
-                .ToListAsync();
-
-            return vehicles;
-        }
         public async Task<Vehicle> UpdateVehicleAsync(Guid id, UpdateVehicleRequest request)
         {
             var userId = GetUserId();
@@ -152,6 +137,33 @@ namespace ServiceLog.Application.Services
 
             _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetUserVehiclesAsync(VehicleFilterRequest? filter = null)
+        {
+            var userId = GetUserId() ?? throw new UnauthorizedAccessException("User not logged in");
+
+            var ownedIds = await _context.VehicleUsers
+                .Where(vu => vu.UserId == userId)
+                .Select(vu => vu.VehicleId)
+                .ToListAsync();
+
+            if (filter == null
+                || (filter.Make == null
+                    && filter.Model == null
+                    && filter.MinEngineCapacity == null
+                    && filter.MaxEngineCapacity == null
+                    && filter.MinPower == null
+                    && filter.MaxPower == null
+                    && filter.Vin == null))
+            {
+                return await _context.Vehicles
+                                     .Where(v => ownedIds.Contains(v.Id))
+                                     .ToListAsync();
+            }
+
+            var filtered = await _vehicleRepository.GetFilteredAsync(filter);
+            return filtered.Where(v => ownedIds.Contains(v.Id));
         }
 
     }

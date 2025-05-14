@@ -1,4 +1,4 @@
-﻿namespace ServiceLog.Application.Interfaces.Repositories
+﻿namespace ServiceLog.Application.Interfaces.Services
 {
     public interface ITokenService
     {

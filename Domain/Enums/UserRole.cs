@@ -4,7 +4,6 @@
     {
         Admin,
         Support,
-        User,
-        Workshop
+        User
     }
 }

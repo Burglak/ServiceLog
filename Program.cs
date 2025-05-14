@@ -47,12 +47,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register repositories
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<VehicleRepository>();
-builder.Services.AddScoped<ServiceRecordRepository>();
-builder.Services.AddScoped<NotificationRepository>();
-builder.Services.AddScoped<VehicleImageRepository>();
-builder.Services.AddScoped<VehicleUserRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IServiceRecordRepository, ServiceRecordRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IVehicleImageRepository, VehicleImageRepository>();
+builder.Services.AddScoped<IVehicleUserRepository, VehicleUserRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Configure JWT Authentication

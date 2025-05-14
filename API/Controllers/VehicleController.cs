@@ -35,11 +35,11 @@ namespace ServiceLog.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllForUser()
+        public async Task<IActionResult> GetAllForUser([FromQuery] VehicleFilterRequest? filter = null)
         {
             try
             {
-                var vehicles = await _vehicleService.GetUserVehiclesAsync();
+                var vehicles = await _vehicleService.GetUserVehiclesAsync(filter);
                 return Ok(vehicles);
             }
             catch (UnauthorizedAccessException)
@@ -47,7 +47,6 @@ namespace ServiceLog.API.Controllers
                 return Unauthorized("User not logged in");
             }
         }
-
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleRequest request)

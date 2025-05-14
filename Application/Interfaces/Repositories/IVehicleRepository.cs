@@ -1,4 +1,5 @@
-﻿using ServiceLog.Domain.Entities;
+﻿using ServiceLog.Application.DTOs.Vehicle;
+using ServiceLog.Domain.Entities;
 
 namespace ServiceLog.Application.Interfaces.Repositories
 {
@@ -9,5 +10,6 @@ namespace ServiceLog.Application.Interfaces.Repositories
         Task<Vehicle> AddAsync(Vehicle vehicle);
         Task<Vehicle> UpdateAsync(Vehicle vehicle);
         Task DeleteAsync(Guid id);
+        Task<IEnumerable<Vehicle>> GetFilteredAsync(VehicleFilterRequest filter);
     }
 }

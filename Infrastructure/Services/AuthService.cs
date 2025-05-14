@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ServiceLog.Application.DTOs.Auth;
 using ServiceLog.Application.Interfaces;
-using ServiceLog.Application.Interfaces.Repositories;
+using ServiceLog.Application.Interfaces.Services;
 using ServiceLog.Domain.Entities;
 using ServiceLog.Domain.Enums;
 using ServiceLog.Infrastructure.Data;

@@ -13,25 +13,25 @@ public class EmailService : IEmailService
         _emailSettings = emailSettings.Value;
     }
 
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    public async Task SendEmailAsync(string toEmail, string subject, string bodyPlain, string bodyHtml)
     {
         var emailMessage = new MimeMessage();
         emailMessage.From.Add(new MailboxAddress("ServiceLog", _emailSettings.From));
-        emailMessage.To.Add(new MailboxAddress("", toEmail));
+        emailMessage.To.Add(MailboxAddress.Parse(toEmail));
         emailMessage.Subject = subject;
 
-        var bodyBuilder = new BodyBuilder
+        var builder = new BodyBuilder
         {
-            TextBody = body
+            TextBody = bodyPlain,
+            HtmlBody = bodyHtml
         };
 
-        emailMessage.Body = bodyBuilder.ToMessageBody();
+        emailMessage.Body = builder.ToMessageBody();
 
-        using (var client = new SmtpClient())
-        {
-            await client.ConnectAsync(_emailSettings.SmtpServer, int.Parse(_emailSettings.Port), useSsl: false);
-            await client.SendAsync(emailMessage);
-            await client.DisconnectAsync(true);
-        }
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_emailSettings.SmtpServer, int.Parse(_emailSettings.Port), useSsl: false);
+        await client.SendAsync(emailMessage);
+        await client.DisconnectAsync(true);
     }
+
 }
