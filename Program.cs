@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ServiceLog.Application.Interfaces;
+using ServiceLog.Application.Interfaces.Repositories;
 using ServiceLog.Application.Interfaces.Services;
 using ServiceLog.Application.Services;
 using ServiceLog.Domain.Entities;
@@ -23,6 +24,10 @@ builder.Services.AddScoped<IServiceRecordService, ServiceRecordService>();
 builder.Services.AddScoped<IServiceRecordImageService, ServiceRecordImageService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+
 
 builder.Services.AddHttpContextAccessor();
 
@@ -43,6 +48,7 @@ builder.Services.AddScoped<ServiceRecordRepository>();
 builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<VehicleImageRepository>();
 builder.Services.AddScoped<VehicleUserRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

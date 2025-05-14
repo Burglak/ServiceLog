@@ -16,6 +16,7 @@ namespace ServiceLog.Infrastructure.Data
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehicleImage> VehicleImages { get; set; }
         public DbSet<VehicleUser> VehicleUsers { get; set; }
+        public DbSet<Token> Tokens { get; set; }
 
         public override int SaveChanges()
         {
