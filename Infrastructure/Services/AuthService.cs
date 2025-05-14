@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ServiceLog.Application.DTOs.Auth;
 using ServiceLog.Application.Interfaces;
+using ServiceLog.Application.Interfaces.Repositories;
 using ServiceLog.Domain.Entities;
 using ServiceLog.Domain.Enums;
 using ServiceLog.Infrastructure.Data;
@@ -13,12 +14,14 @@ namespace ServiceLog.Infrastructure.Services
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(ApplicationDbContext context, IJwtService jwtService)
+        public AuthService(ApplicationDbContext context, IJwtService jwtService, ITokenService tokenService)
         {
             _context = context;
             _jwtService = jwtService;
             _passwordHasher = new PasswordHasher<User>();
+            _tokenService = tokenService;
         }
 
         public async Task<string> RegisterAsync(RegisterRequest request)
@@ -52,6 +55,16 @@ namespace ServiceLog.Infrastructure.Services
                 throw new Exception("Invalid credentials");
 
             return _jwtService.GenerateToken(user.Id, user.Username, user.Role.ToString());
+        }
+
+        public async Task SendResetCodeAsync(string email)
+        {
+            await _tokenService.GenerateResetPasswordTokenAsync(email);
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, string code, string newPassword)
+        {
+            return await _tokenService.ResetPasswordAsync(email, code, newPassword);
         }
     }
 }
