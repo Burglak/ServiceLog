@@ -23,6 +23,21 @@ namespace ServiceLog.API.Controllers
             return Ok(image);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllForUser()
+        {
+            var result = await _service.GetAllForUserAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("record/{serviceRecordId}")]
+        public async Task<IActionResult> GetAllForServiceRecord(int serviceRecordId)
+        {
+            var result = await _service.GetAllForServiceRecordAsync(serviceRecordId);
+            return Ok(result);
+        }
+
+
         [HttpGet("{imageId}")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GetImage(int imageId)

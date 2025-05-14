@@ -63,6 +63,46 @@ namespace ServiceLog.Application.Services
             return image;
         }
 
+        public async Task<IEnumerable<ServiceRecordImage>> GetAllForUserAsync()
+        {
+            var userId = GetUserId();
+            if (userId == null)
+                throw new UnauthorizedAccessException();
+
+            var vehicleIds = await _context.VehicleUsers
+                .Where(vu => vu.UserId == userId)
+                .Select(vu => vu.VehicleId)
+                .ToListAsync();
+
+            return await _context.ServiceRecordImages
+                .Include(i => i.ServiceRecord)
+                .Where(i => vehicleIds.Contains(i.ServiceRecord.VehicleId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ServiceRecordImage>> GetAllForServiceRecordAsync(int serviceRecordId)
+        {
+            var userId = GetUserId();
+            if (userId == null)
+                throw new UnauthorizedAccessException();
+
+            var record = await _context.ServiceRecords
+                .Include(sr => sr.Vehicle)
+                .FirstOrDefaultAsync(sr => sr.Id == serviceRecordId);
+
+            if (record == null)
+                return [];
+
+            var isOwner = await _context.VehicleUsers
+                .AnyAsync(vu => vu.UserId == userId && vu.VehicleId == record.VehicleId);
+
+            if (!isOwner)
+                throw new UnauthorizedAccessException();
+
+            return await _context.ServiceRecordImages
+                .Where(i => i.ServiceRecordId == serviceRecordId)
+                .ToListAsync();
+        }
         public async Task<bool> DeleteImageAsync(int imageId)
         {
             var userId = GetUserId();

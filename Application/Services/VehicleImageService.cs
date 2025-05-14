@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceLog.Application.Interfaces.Services;
 using ServiceLog.Domain.Entities;
@@ -57,6 +56,39 @@ namespace ServiceLog.Application.Services
             await _context.SaveChangesAsync();
 
             return image;
+        }
+
+        public async Task<IEnumerable<VehicleImage>> GetAllForUserAsync()
+        {
+            var userId = GetUserId();
+            if (userId == null)
+                throw new UnauthorizedAccessException("User not logged in");
+
+            var vehicleIds = await _context.VehicleUsers
+                .Where(vu => vu.UserId == userId)
+                .Select(vu => vu.VehicleId)
+                .ToListAsync();
+
+            return await _context.VehicleImages
+                .Where(i => vehicleIds.Contains(i.VehicleId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<VehicleImage>> GetAllForVehicleAsync(Guid vehicleId)
+        {
+            var userId = GetUserId();
+            if (userId == null)
+                throw new UnauthorizedAccessException("User not logged in");
+
+            var isOwned = await _context.VehicleUsers
+                .AnyAsync(vu => vu.UserId == userId && vu.VehicleId == vehicleId);
+
+            if (!isOwned)
+                throw new UnauthorizedAccessException("Vehicle does not belong to user");
+
+            return await _context.VehicleImages
+                .Where(i => i.VehicleId == vehicleId)
+                .ToListAsync();
         }
 
         public async Task<FileStreamResult?> GetImageAsync(int imageId)

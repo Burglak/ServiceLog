@@ -7,6 +7,8 @@ namespace ServiceLog.Application.Interfaces.Services
     {
         Task<ServiceRecordImage> AddImageAsync(int serviceRecordId, IFormFile file);
         Task<bool> DeleteImageAsync(int imageId);
+        Task<IEnumerable<ServiceRecordImage>> GetAllForUserAsync();
+        Task<IEnumerable<ServiceRecordImage>> GetAllForServiceRecordAsync(int serviceRecordId);
         Task<FileStreamResult?> GetImageAsync(int imageId);
     }
 }

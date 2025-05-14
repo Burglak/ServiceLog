@@ -35,6 +35,21 @@ namespace ServiceLog.API.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllForUser()
+        {
+            var result = await _imageService.GetAllForUserAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("vehicle/{vehicleId}")]
+        public async Task<IActionResult> GetAllForVehicle(Guid vehicleId)
+        {
+            var result = await _imageService.GetAllForVehicleAsync(vehicleId);
+            return Ok(result);
+        }
+
+
         [HttpGet("{imageId}")]
         public async Task<IActionResult> GetImage(int imageId)
         {
