@@ -5,38 +5,36 @@ using ServiceLog.Infrastructure.Data;
 
 namespace ServiceLog.Infrastructure.Seed
 {
+    [SeederOrder(1)]
     public class UserSeeder : ISeeder
     {
-        public async Task SeedAsync(ApplicationDbContext dbContext)
+        private readonly IPasswordHasher<User> _passwordHasher;
+
+        public UserSeeder(IPasswordHasher<User> passwordHasher)
         {
-            if (dbContext.Users.Any())
-                return;
+            _passwordHasher = passwordHasher;
+        }
 
-            var hasher = new PasswordHasher<User>();
+        public async Task SeedAsync(ApplicationDbContext context)
+        {
+            if (context.Users.Any()) return;
 
-            var users = new List<User>
+            var users = new[]
             {
-                new User
-                {
-                    Username = "admin",
-                    Email = "admin@example.com",
-                    Role = UserRole.Admin
-                },
-                new User
-                {
-                    Username = "user1",
-                    Email = "user1@example.com",
-                    Role = UserRole.User
-                }
+                new User { Username = "alice", Email = "alice@example.com", Role = UserRole.User },
+                new User { Username = "bob", Email = "bob@example.com", Role = UserRole.User },
+                new User { Username = "carol", Email = "carol@example.com", Role = UserRole.User },
+                new User { Username = "dave", Email = "dave@example.com", Role = UserRole.User },
+                new User { Username = "eve", Email = "eve@example.com", Role = UserRole.User }
             };
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
-                user.Password = hasher.HashPassword(user, "password");
+                user.Password = _passwordHasher.HashPassword(user, "password");
             }
 
-            dbContext.Users.AddRange(users);
-            await dbContext.SaveChangesAsync();
+            context.Users.AddRange(users);
+            await context.SaveChangesAsync();
         }
     }
 }

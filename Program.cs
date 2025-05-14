@@ -12,6 +12,8 @@ using ServiceLog.Infrastructure.Data;
 using ServiceLog.Infrastructure.Repositories;
 using ServiceLog.Infrastructure.Services;
 using System.Text;
+using ServiceLog.Infrastructure.Seed;
+using ServiceLog.Infrastructure.Schedulers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +33,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 
-
-
+// Register schedulers
+builder.Services.AddHostedService<SchedulerBackgroundService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -54,6 +56,14 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IVehicleImageRepository, VehicleImageRepository>();
 builder.Services.AddScoped<IVehicleUserRepository, VehicleUserRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+
+// Register seeders
+builder.Services.AddTransient<UserSeeder>();
+builder.Services.AddTransient<VehicleSeeder>();
+builder.Services.AddTransient<VehicleUserSeeder>();
+builder.Services.AddTransient<ServiceRecordSeeder>();
+builder.Services.AddTransient<NotificationSeeder>();
+
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -112,6 +122,13 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DatabaseSeeder.SeedAsync(db, scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

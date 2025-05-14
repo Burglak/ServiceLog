@@ -1,16 +1,18 @@
-﻿using ServiceLog.Infrastructure.Data;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ServiceLog.Infrastructure.Data;
 using System.Reflection;
 
 namespace ServiceLog.Infrastructure.Seed
 {
     public static class DatabaseSeeder
     {
-        public static async Task SeedAsync(ApplicationDbContext db)
+        public static async Task SeedAsync(ApplicationDbContext db, IServiceProvider serviceProvider)
         {
             var seederTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(t => typeof(ISeeder).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
-                .Select(t => new {
+                .Select(t => new
+                {
                     Type = t,
                     Order = t.GetCustomAttribute<SeederOrderAttribute>()?.Order ?? 0
                 })
@@ -19,9 +21,10 @@ namespace ServiceLog.Infrastructure.Seed
 
             foreach (var type in seederTypes)
             {
-                var seeder = (ISeeder)Activator.CreateInstance(type)!;
+                var seeder = (ISeeder)serviceProvider.GetRequiredService(type);
                 await seeder.SeedAsync(db);
             }
         }
     }
+
 }
