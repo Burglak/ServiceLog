@@ -18,15 +18,12 @@ namespace ServiceLog.Application.Services
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
-
-        // Pobieranie UserId z tokenu JWT
         private int? GetUserId()
         {
             var idClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(idClaim, out var id) ? id : null;
         }
 
-        // Tworzenie nowego pojazdu
         public async Task<Vehicle> CreateVehicleAsync(CreateVehicleRequest request)
         {
             var userId = GetUserId();
@@ -52,14 +49,12 @@ namespace ServiceLog.Application.Services
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
 
-            // Przypisanie pojazdu do użytkownika
             _context.VehicleUsers.Add(new VehicleUser { VehicleId = vehicle.Id, UserId = userId.Value });
             await _context.SaveChangesAsync();
 
             return vehicle;
         }
 
-        // Pobieranie pojazdu po ID
         public async Task<Vehicle?> GetVehicleByIdAsync(Guid id)
         {
             var userId = GetUserId();
@@ -88,10 +83,6 @@ namespace ServiceLog.Application.Services
 
             return vehicles;
         }
-
-
-
-        // Aktualizacja pojazdu
         public async Task<Vehicle> UpdateVehicleAsync(Guid id, UpdateVehicleRequest request)
         {
             var userId = GetUserId();
@@ -106,7 +97,6 @@ namespace ServiceLog.Application.Services
             if (vehicle == null)
                 throw new InvalidOperationException("Vehicle not found");
 
-            // Warunkowa aktualizacja właściwości
             if (request.Make != null) vehicle.Make = request.Make;
             if (request.Model != null) vehicle.Model = request.Model;
             if (request.Year.HasValue) vehicle.Year = request.Year.Value;
@@ -122,6 +112,28 @@ namespace ServiceLog.Application.Services
 
             await _context.SaveChangesAsync();
             return vehicle;
+        }
+
+        public async Task<bool> TransferVehicleOwnershipAsync(Guid vehicleId, int newUserId)
+        {
+            var currentUserId = GetUserId();
+            if (currentUserId == null)
+                throw new UnauthorizedAccessException("User not logged in");
+
+            var vehicleUser = await _context.VehicleUsers
+                .FirstOrDefaultAsync(vu => vu.VehicleId == vehicleId && vu.UserId == currentUserId);
+
+            if (vehicleUser == null)
+                throw new UnauthorizedAccessException("You do not own this vehicle");
+
+            var newUserExists = await _context.Users.AnyAsync(u => u.Id == newUserId);
+            if (!newUserExists)
+                throw new ArgumentException("New user not found");
+
+            vehicleUser.UserId = newUserId;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task DeleteVehicleAsync(Guid id)

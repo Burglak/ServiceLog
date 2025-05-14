@@ -67,6 +67,18 @@ namespace ServiceLog.API.Controllers
             }
         }
 
+        [HttpPost("{vehicleId}/transfer")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> TransferOwnership(Guid vehicleId, [FromBody] TransferVehicleRequest request)
+        {
+            var success = await _vehicleService.TransferVehicleOwnershipAsync(vehicleId, request.NewUserId);
+            if (!success)
+                return BadRequest("Transfer failed");
+
+            return Ok("Vehicle ownership transferred successfully");
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

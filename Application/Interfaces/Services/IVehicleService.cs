@@ -10,6 +10,7 @@ namespace ServiceLog.Application.Interfaces.Services
         Task<IEnumerable<Vehicle>> GetUserVehiclesAsync();
 
         Task<Vehicle> UpdateVehicleAsync(Guid id, UpdateVehicleRequest request);
+        Task<bool> TransferVehicleOwnershipAsync(Guid vehicleId, int newUserId);
         Task DeleteVehicleAsync(Guid id);
     }
 }
