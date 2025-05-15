@@ -6,7 +6,7 @@ using ServiceLog.Domain.Entities;
 namespace ServiceLog.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/notifications")]
     [Authorize]
     public class NotificationController : ControllerBase
     {
